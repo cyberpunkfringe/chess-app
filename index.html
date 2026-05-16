@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>3D Chess Engine</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <!-- ============================
+       SLIDE-IN THEME SIDEBAR
+  ============================ -->
+  <div id="themePanel" class="theme-panel">
+
+    <!-- BOARD LAYERS -->
+    <label>White Board</label>
+    <input type="color" id="boardLight" value="#ffffff">
+
+    <label>Black Layer</label>
+    <input type="color" id="boardDark" value="#000000">
+
+    <label>Board Edge</label>
+    <input type="color" id="boardEdge" value="#333333">
+
+    <label>Board Depth</label>
+    <input type="range" id="boardDepthIntensity" min="0" max="2" step="0.05" value="1.0">
+
+    <!-- PIECES -->
+    <label>Piece White</label>
+    <input type="color" id="pieceWhite" value="#ffffff">
+
+    <label>Piece Black</label>
+    <input type="color" id="pieceBlack" value="#000000">
+
+    <label>White Depth</label>
+    <input type="range" id="pieceWhiteDepth" min="0" max="2" step="0.05" value="1.0">
+
+    <label>Black Depth</label>
+    <input type="range" id="pieceBlackDepth" min="0" max="2" step="0.05" value="1.0">
+
+    <!-- LABELS -->
+    <label>Label White</label>
+    <input type="color" id="labelWhite" value="#ffffff">
+
+    <label>Label Black</label>
+    <input type="color" id="labelBlack" value="#ff6666">
+
+    <label>Title Size</label>
+    <input type="range" id="labelSize" min="0" max="48" step="1" value="28">
+
+    <!-- WORLD -->
+    <label>World Background</label>
+    <input type="color" id="worldBg" value="#111111">
+
+    <label>World FX</label>
+    <select id="worldFX">
+      <option value="none">None</option>
+      <option value="stars">Stars</option>
+      <option value="clouds">Clouds</option>
+      <option value="nebula">Nebula</option>
+    </select>
+
+    <!-- HDR -->
+    <label>HDR Enabled</label>
+    <input type="checkbox" id="hdrEnabled">
+
+    <div id="hdrSettings">
+      <label>HDR Exposure</label>
+      <input type="range" id="hdrExposure" min="0" max="5" step="0.05" value="1.0">
+
+      <label>HDR Intensity</label>
+      <input type="range" id="hdrIntensity" min="0" max="5" step="0.05" value="1.0">
+    </div>
+
+    <!-- HOVER -->
+    <label>Hover Tile</label>
+    <input type="color" id="hoverColor" value="#44aa44">
+
+    <!-- ⭐ NEW: HOVER INTENSITY -->
+    <label>Hover Intensity</label>
+    <input type="range" id="hoverIntensity" min="0" max="2" step="0.05" value="1.0">
+
+    <!-- LIGHTING -->
+    <label>Sun Color</label>
+    <input type="color" id="dirColor" value="#ffffff">
+
+    <label>Sun Intensity</label>
+    <input type="range" id="dirIntensity" min="0" max="2" step="0.01" value="1">
+
+    <label>Sky Color</label>
+    <input type="color" id="hemiSky" value="#ffffff">
+
+    <label>Ground Color</label>
+    <input type="color" id="hemiGround" value="#222222">
+
+    <label>Ambient Intensity</label>
+    <input type="range" id="hemiIntensity" min="0" max="2" step="0.01" value="0.6">
+
+    <!-- LABEL FONT / GLOW -->
+    <label>Font Style</label>
+    <select id="fontStyle">
+      <option value="Arial">Arial</option>
+      <option value="Segoe UI">Segoe UI</option>
+      <option value="Roboto">Roboto</option>
+      <option value="Monospace">Monospace</option>
+    </select>
+
+    <label>Glow Intensity</label>
+    <input type="range" id="glowIntensity" min="0" max="3" step="0.1" value="1.0">
+
+    <!-- SAVE -->
+    <button id="saveTheme">Save Theme</button>
+
+    <!-- LOAD -->
+    <button id="loadThemeBtn">Load Theme</button>
+  </div>
+
+  <!-- ============================
+       LOAD THEME OVERLAY
+  ============================ -->
+  <div id="themeLoaderOverlay" class="overlay hidden">
+    <div class="overlay-box">
+      <h2>Load Theme</h2>
+      <select id="themeListBox" size="8" style="width:100%; margin-bottom:10px;"></select>
+      <button id="applyThemeBtn">Apply Theme</button>
+      <button id="closeThemeOverlay">Close</button>
+    </div>
+  </div>
+
+  <!-- ============================
+       3D CANVAS
+  ============================ -->
+  <canvas id="scene"></canvas>
+
+  <!-- ============================
+       FLOATING BUTTON GROUP (Undo / Redo / Flip)
+  ============================ -->
+  <div id="rightButtonGroup">
+    <button id="undoBtn" class="side-btn">⟲ Undo</button>
+    <button id="redoBtn" class="side-btn">⟳ Redo</button>
+    <button id="flipBtn" class="side-btn">⤾ Flip</button>
+  </div>
+
+  <!-- ============================
+       FLOATING BUTTONS (AI + THEME)
+  ============================ -->
+  <button id="themeBtn" class="theme-toggle">🎨 Theme</button>
+  <div id="aiFloatingButton" class="ai-float-btn">AI</div>
+
+    <div id="aiOverlay" class="ai-overlay hidden">
+    <div class="ai-overlay-content">
+      <h2>Select AI Difficulty</h2>
+      <div class="ai-overlay-option" data-difficulty="beginner">Beginner</div>
+      <div class="ai-overlay-option" data-difficulty="medium">Medium</div>
+      <div class="ai-overlay-option" data-difficulty="hard">Hard</div>
+    </div>
+  </div>
+
+  <div id="updatePieceOverlay" class="hidden">
+  <div id="updatePieceBox">
+    <div class="updatePiece-title">Choose New Piece</div>
+
+    <button class="updatePiece-btn" data-role="queen">Queen</button>
+    <button class="updatePiece-btn" data-role="rook">Rook</button>
+    <button class="updatePiece-btn" data-role="bishop">Bishop</button>
+    <button class="updatePiece-btn" data-role="knight">Knight</button>
+  </div>
+</div>
+
+  <!-- ============================
+       LIBRARIES
+  ============================ -->
+  <script src="three.min.js"></script>
+  <script src="OrbitControls.js"></script>
+
+  <!-- ============================
+       RGBE LOADER
+  ============================ -->
+  <script src="RGBELoader.js"></script>
+
+  <!-- ============================
+       ENGINE MODULES (ORDER MATTERS)
+  ============================ -->
+  <script src="world.js"></script>
+  <script src="lighting.js"></script>
+  <script src="sound.js"></script>
+  <script src="movement.js"></script>
+  <script src="board.js"></script>
+
+  <!-- Logic BEFORE pieces -->
+  <script src="logic.js"></script>
+
+  <!-- Pieces AFTER Logic -->
+  <script src="pieces.js"></script>
+  <script src="pieces.movement.js"></script>
+  <script src="pieces.shadow.js"></script>
+  <script src="board.texture.js"></script>
+  <script src="pieces.texture.js"></script>
+
+  <!-- Undo / Redo / Capture / Flip -->
+  <script src="undo.redo.js"></script>
+  <script src="capture.js"></script>
+  <script src="flip.js"></script>
+
+  <!-- ============================
+       THEME (auto-loader included)
+  ============================ -->
+  <script src="theme.js"></script>
+
+  <!-- ============================
+       AI ENGINE
+  ============================ -->
+  <script src="engine.js"></script>
+  <script src="chess.ai.js"></script>
+  <script src="chess.ai.logic.js"></script>
+
+  <!-- ============================
+       AI UI LOGIC
+  ============================ -->
+  <script src="ui.ai.js"></script>
+
+  <!-- ============================
+       CORE APP (LAST)
+  ============================ -->
+  <script src="app.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,496 @@
+/* ============================
+   GLOBAL RESET
+============================ */
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: #000;
+  height: 100%;
+  font-family: "Segoe UI", Roboto, sans-serif;
+  color: #fff;
+}
+
+/* ============================
+   CANVAS
+============================ */
+#scene {
+  width: 100vw;
+  height: 100vh;
+  display: block;
+}
+
+/* ============================
+   RIGHT BUTTON GROUP (Undo / Redo / Flip)
+============================ */
+#rightButtonGroup {
+  position: fixed;
+  bottom: 180px;
+  right: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 9999;
+}
+
+.side-btn {
+  background: rgba(0,0,0,0.6);
+  color: #0ff;
+  border: 1px solid #0ff;
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.side-btn:hover {
+  background: #0ff;
+  color: #000;
+  box-shadow: 0 0 12px #0ff;
+}
+
+/* ============================
+   THEME TOGGLE BUTTON
+============================ */
+.theme-toggle {
+  position: fixed;
+  bottom: 110px;
+  right: 28px;
+  z-index: 9999;
+
+  background: rgba(0,0,0,0.6);
+  color: #0ff;
+
+  border: 1px solid #0ff;
+  border-radius: 6px;
+
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+
+  transition: all 0.25s ease;
+}
+
+.theme-toggle:hover {
+  background: rgba(0,0,0,0.85);
+  box-shadow: 0 0 12px #0ff;
+}
+
+/* ============================
+   THEME PANEL — Futuristic Minimalist
+============================ */
+.theme-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 320px;
+  height: 100vh;
+
+  background: rgba(10, 10, 10, 0.85);
+  backdrop-filter: blur(12px);
+
+  padding: 20px 24px 40px;
+  box-sizing: border-box;
+
+  display: block;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+
+  border-right: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 4px 0 28px rgba(0, 0, 0, 0.75);
+
+  transform: translateX(-100%);
+  transition: transform 0.35s ease;
+
+  z-index: 10;
+}
+
+.theme-panel.visible {
+  transform: translateX(0);
+}
+
+/* Scrollbar */
+.theme-panel::-webkit-scrollbar {
+  width: 8px;
+}
+
+.theme-panel::-webkit-scrollbar-track {
+  background: rgba(20, 20, 20, 0.6);
+  border-radius: 4px;
+}
+
+.theme-panel::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #0ff 0%, #00aaff 100%);
+  border-radius: 4px;
+  box-shadow: 0 0 8px rgba(0,255,255,0.4);
+}
+
+.theme-panel::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #00ffff 0%, #00ccff 100%);
+  box-shadow: 0 0 12px rgba(0,255,255,0.6);
+}
+
+/* ============================
+   LABELS
+============================ */
+.theme-panel label {
+  font-size: 12px;
+  opacity: 0.78;
+  letter-spacing: 0.5px;
+  margin-top: 10px;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  user-select: none;
+  display: block;
+}
+
+/* ============================
+   COLOR PICKERS
+============================ */
+.theme-panel input[type="color"] {
+  width: 48px;
+  height: 30px;
+  border: 2px solid #333;
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.theme-panel input[type="color"]:hover {
+  border-color: #0ff;
+  box-shadow: 0 0 12px #0ff;
+}
+
+/* ============================
+   RANGE SLIDERS
+============================ */
+.theme-panel input[type="range"] {
+  width: 100%;
+  height: 4px;
+  background: #111;
+  border-radius: 4px;
+  cursor: pointer;
+  accent-color: #0ff;
+  transition: 0.2s ease;
+}
+
+.theme-panel input[type="range"]:hover {
+  filter: drop-shadow(0 0 6px #0ff);
+}
+
+/* ============================
+   SELECT DROPDOWN
+============================ */
+.theme-panel select {
+  width: 100%;
+  padding: 6px 12px;
+  background: rgba(20, 20, 20, 0.9);
+  border: 1px solid #444;
+  border-radius: 4px;
+  color: #0ff;
+  cursor: pointer;
+  transition: 0.2s ease;
+  font-size: 13px;
+}
+
+.theme-panel select:hover {
+  border-color: #0ff;
+  box-shadow: 0 0 12px #0ff;
+}
+
+/* ============================
+   HDR BLOCK
+============================ */
+#hdrEnabled {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #0ff;
+  margin-top: 6px;
+}
+
+#hdrSettings {
+  padding-left: 10px;
+  border-left: 2px solid rgba(0,255,255,0.25);
+  margin-top: 6px;
+  margin-bottom: 10px;
+  display: none;
+}
+
+#hdrSettings label {
+  margin-top: 8px;
+}
+
+/* ============================
+   BUTTONS (Theme Panel)
+============================ */
+.theme-panel button {
+  padding: 8px 18px;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+  color: #0ff;
+  border: 1px solid #0ff;
+  border-radius: 4px;
+  font-size: 13px;
+  letter-spacing: 0.6px;
+  cursor: pointer;
+  transition: 0.25s ease;
+  margin-top: 8px;
+}
+
+.theme-panel button:hover {
+  background: #0ff;
+  color: #000;
+  box-shadow: 0 0 16px #0ff;
+}
+
+.theme-panel button:last-of-type {
+  margin-bottom: 12px;
+}
+
+/* ============================
+   RESPONSIVE
+============================ */
+@media (max-width: 600px) {
+  .theme-panel {
+    width: 260px;
+  }
+
+  .theme-toggle {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  .theme-panel input[type="color"] {
+    width: 40px;
+    height: 24px;
+  }
+
+  .theme-panel button {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+}
+
+/* ============================================================
+   PIECE LABEL VISUALS
+============================================================ */
+.piece-label {
+  background: rgba(0, 0, 0, 0.65);
+  border-radius: 4px;
+  padding: 4px 8px;
+  transition: 0.25s ease;
+}
+
+.piece-label-hover {
+  box-shadow: 0 0 18px var(--label-glow-color, #0ff);
+}
+
+.piece-label-active {
+  box-shadow: 0 0 calc(28px * var(--label-glow-intensity, 1))
+              var(--label-glow-color, #0ff);
+}
+
+/* ============================================================
+   FLOATING AI BUTTON
+============================================================ */
+.ai-float-btn {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  width: 62px;
+  height: 62px;
+
+  background: #0ff;
+  color: #000;
+
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-weight: bold;
+  font-size: 20px;
+  cursor: pointer;
+
+  box-shadow: 0 0 18px rgba(0,255,255,0.55);
+  transition: 0.25s ease;
+
+  z-index: 9999;
+}
+
+.ai-float-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 28px rgba(0,255,255,0.85);
+}
+
+/* ============================================================
+   AI OVERLAY
+============================================================ */
+.ai-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9998;
+}
+
+.ai-overlay.hidden {
+  display: none;
+}
+
+.ai-overlay-content {
+  background: rgba(20,20,20,0.92);
+  padding: 32px;
+  border-radius: 12px;
+  text-align: center;
+  color: #0ff;
+  width: 320px;
+  box-shadow: 0 0 22px rgba(0,255,255,0.25);
+}
+
+.ai-overlay-content h2 {
+  margin-bottom: 18px;
+  font-size: 22px;
+  letter-spacing: 1px;
+}
+
+.ai-overlay-option {
+  padding: 12px;
+  margin-top: 12px;
+  background: #222;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 18px;
+  transition: 0.2s ease;
+}
+
+.ai-overlay-option:hover {
+  background: #333;
+  box-shadow: 0 0 12px rgba(0,255,255,0.35);
+}
+
+/* ============================================================
+   LOAD THEME OVERLAY
+============================================================ */
+#themeLoaderOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9998;
+}
+
+#themeLoaderOverlay.hidden {
+  display: none;
+}
+
+.overlay-box {
+  background: rgba(20,20,20,0.92);
+  padding: 28px;
+  border-radius: 12px;
+  width: 340px;
+  color: #0ff;
+  text-align: center;
+  box-shadow: 0 0 22px rgba(0,255,255,0.25);
+}
+
+.overlay-box h2 {
+  margin-bottom: 16px;
+  font-size: 22px;
+  letter-spacing: 1px;
+}
+
+#themeListBox {
+  width: 100%;
+  height: 180px;
+  background: #111;
+  border: 1px solid #0ff;
+  color: #0ff;
+  border-radius: 6px;
+  padding: 6px;
+  margin-bottom: 16px;
+  outline: none;
+}
+
+#themeListBox option {
+  padding: 6px;
+  background: #111;
+  color: #0ff;
+}
+
+#themeListBox option:hover {
+  background: #0ff;
+  color: #000;
+}
+
+#applyThemeBtn,
+#closeThemeOverlay {
+  width: 100%;
+  padding: 10px;
+  margin-top: 8px;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+  border: 1px solid #0ff;
+  color: #0ff;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+#applyThemeBtn:hover,
+#closeThemeOverlay:hover {
+  background: #0ff;
+  color: #000;
+  box-shadow: 0 0 16px #0ff;
+}
+
+#updatePieceOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999999;
+}
+
+#updatePieceOverlay.hidden {
+  display: none;
+}
+
+#updatePieceBox {
+  background: #111;
+  padding: 20px 30px;
+  border-radius: 10px;
+  border: 2px solid #0ff;
+  text-align: center;
+}
+
+.updatePiece-title {
+  color: #0ff;
+  font-size: 28px;
+  margin-bottom: 15px;
+}
+
+.updatePiece-btn {
+  display: block;
+  width: 160px;
+  margin: 8px auto;
+  padding: 10px;
+  font-size: 20px;
+  background: #222;
+  color: #0ff;
+  border: 2px solid #0ff;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.updatePiece-btn:hover {
+  background: #0ff;
+  color: #000;
+}
